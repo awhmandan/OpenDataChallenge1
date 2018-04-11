@@ -1,0 +1,11 @@
+{
+  "name": "Architrave",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "csv-parse": "^2.2.0",
+    "csv-parser": "^1.12.1",
+    "d3": "^5.0.0"
+  }
+}
