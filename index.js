@@ -79,7 +79,9 @@ function flag({ code, message, itemType, location }) {
 }
 
 function dataChecks(columnErrors, column) {
-  if (hasIPAddress(column.data)) return columnErrors.concat(
+  var errors = [];
+
+  if (hasIPAddress(column.data)) errors.push(
     flag({
       code: 'ip-address-found',
       message: 'Oops! We\'ve found an IP address!',
@@ -88,7 +90,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasNINO(column.data)) return columnErrors.concat(
+  if (hasNINO(column.data)) errors.push(
     flag({
       code: 'national-insurance-number-found',
       message: 'Oops! We\'ve found a National Insurance number!',
@@ -97,7 +99,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasEmail(column.data)) return columnErrors.concat(
+  if (hasEmail(column.data)) errors.push(
     flag({
       code: 'email-address-found',
       message: 'Oops! We\'ve found an email address!',
@@ -106,7 +108,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasDate(column.data)) return columnErrors.concat(
+  if (hasDate(column.data)) errors.push(
     flag({
       code: 'date-found',
       message: 'Oops! We\'ve found a date! You may want to check it\'s not a date of birth.',
@@ -115,7 +117,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasCreditCardVisa(column.data)) return columnErrors.concat(
+  if (hasCreditCardVisa(column.data)) errors.push(
     flag({
       code: 'credit-card-visa-found',
       message: 'Oops! We\'ve found a Visa credit card number!',
@@ -124,7 +126,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasCreditCardMasterCard(column.data)) return columnErrors.concat(
+  if (hasCreditCardMasterCard(column.data)) errors.push(
     flag({
       code: 'credit-card-mastercard-found',
       message: 'Oops! We\'ve found a MasterCard credit card number!',
@@ -133,7 +135,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasUkCarRegistration(column.data)) return columnErrors.concat(
+  if (hasUkCarRegistration(column.data)) errors.push(
     flag({
       code: 'car-registration-found',
       message: 'Oops! We\'ve found a car registration number!',
@@ -142,7 +144,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasUkMobilePhoneNumber(column.data)) return columnErrors.concat(
+  if (hasUkMobilePhoneNumber(column.data)) errors.push(
     flag({
       code: 'mobile-phone-number-found',
       message: 'Oops! We\'ve found a mobile phone number!',
@@ -151,7 +153,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasTwitterHandle(column.data)) return columnErrors.concat(
+  if (hasTwitterHandle(column.data)) errors.push(
     flag({
       code: 'twitter-handle-found',
       message: 'Oops! We\'ve found a Twitter handle!',
@@ -160,7 +162,7 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  return columnErrors;
+  return columnErrors.concat(errors);
 }
 
 function scan(rows) {
