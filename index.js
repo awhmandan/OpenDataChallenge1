@@ -2,19 +2,23 @@ var parse = require('csv-parse/lib/sync');
 var fs = require('fs');
 
 var patterns = {
-  ip: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/,
-  nino: /((?=[^dfiquv])[a-z])(?=[^dfioquv])[a-z] ?[0-9]{2} ?[0-9]{2} ?[0-9]{2} ?[a-d]{1}/i,
-  email: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  dob: /^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d$/,
-  cc: /^4[0-9]{12}(?:[0-9]{3})?$/
+  ipAddress: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/,
+  nationalInsuranceNumber: /((?=[^dfiquv])[a-z])(?=[^dfioquv])[a-z] ?[0-9]{2} ?[0-9]{2} ?[0-9]{2} ?[a-d]{1}/i,
+  email: /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/,
+  dateOfBirth: /(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d/,
+  creditCardVisa: /4[0-9]{12}(?:[0-9]{3})?/,
+  creditCardMasterCard: /(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}/,
+  ukCarRegistration: /([A-Z]{3}\s?(\d{3}|\d{2}|d{1})\s?[A-Z])|([A-Z]\s?(\d{3}|\d{2}|\d{1})\s?[A-Z]{3})|(([A-HK-PRSVWY][A-HJ-PR-Y])\s?([0][2-9]|[1-9][0-9])\s?[A-HJ-PR-Z]{3})/,
+  ukMobilePhoneNumber: /(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}/,
+  twitterHandle: /(?:@)([A-Za-z0-9_](?:(?:[A-Za-z0-9_]|(?:\.(?!\.))){0,28}(?:[A-Za-z0-9_]))?)/
 }
 
 var hasIPAddress = function (cell) {
-  return patterns.ip.test(cell);
+  return patterns.ipAddress.test(cell);
 }
 
 var hasNINO = function (cell) {
-  return patterns.nino.test(cell);
+  return patterns.nationalInsuranceNumber.test(cell);
 }
 
 var hasEmail = function (cell) {
@@ -22,11 +26,27 @@ var hasEmail = function (cell) {
 }
 
 var hasDOB = function (cell) {
-  return patterns.dob.test(cell);
+  return patterns.dateOfBirth.test(cell);
 }
 
-var hasCreditCard = function (cell) {
-  return patterns.cc.test(cell);
+var hasCreditCardVisa = function (cell) {
+  return patterns.creditCardVisa.test(cell);
+}
+
+var hasCreditCardMasterCard = function (cell) {
+  return patterns.creditCardMasterCard.test(cell);
+}
+
+var hasUkCarRegistration = function (cell) {
+  return patterns.ukCarRegistration.test(cell);
+}
+
+var hasUkMobilePhoneNumber = function (cell) {
+  return patterns.ukMobilePhoneNumber.test(cell);
+}
+
+var hasTwitterHandle = function (cell) {
+  return patterns.twitterHandle.test(cell);
 }
 
 function map(data) {
@@ -95,10 +115,46 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasCreditCard(column.data)) return columnErrors.concat(
+  if (hasCreditCardVisa(column.data)) return columnErrors.concat(
     flag({
-      code: 'credit-card-found',
-      message: 'Oops! We\'ve found a credit card number!',
+      code: 'credit-card-visa-found',
+      message: 'Oops! We\'ve found a Visa credit card number!',
+      location: column.location,
+      itemType: 'cell'
+    })
+  );
+
+  if (hasCreditCardMasterCard(column.data)) return columnErrors.concat(
+    flag({
+      code: 'credit-card-mastercard-found',
+      message: 'Oops! We\'ve found a MasterCard credit card number!',
+      location: column.location,
+      itemType: 'cell'
+    })
+  );
+
+  if (hasUkCarRegistration(column.data)) return columnErrors.concat(
+    flag({
+      code: 'car-registration-found',
+      message: 'Oops! We\'ve found a car registration number!',
+      location: column.location,
+      itemType: 'cell'
+    })
+  );
+
+  if (hasUkMobilePhoneNumber(column.data)) return columnErrors.concat(
+    flag({
+      code: 'mobile-phone-number-found',
+      message: 'Oops! We\'ve found a mobile phone number!',
+      location: column.location,
+      itemType: 'cell'
+    })
+  );
+
+  if (hasTwitterHandle(column.data)) return columnErrors.concat(
+    flag({
+      code: 'twitter-handle-found',
+      message: 'Oops! We\'ve found a Twitter handle!',
       location: column.location,
       itemType: 'cell'
     })
