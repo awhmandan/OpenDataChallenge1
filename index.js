@@ -5,7 +5,7 @@ var patterns = {
   ipAddress: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/,
   nationalInsuranceNumber: /((?=[^dfiquv])[a-z])(?=[^dfioquv])[a-z] ?[0-9]{2} ?[0-9]{2} ?[0-9]{2} ?[a-d]{1}/i,
   email: /(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))/,
-  dateOfBirth: /(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d/,
+  date: /(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)\d\d/,
   creditCardVisa: /4[0-9]{12}(?:[0-9]{3})?/,
   creditCardMasterCard: /(?:5[1-5][0-9]{2}|222[1-9]|22[3-9][0-9]|2[3-6][0-9]{2}|27[01][0-9]|2720)[0-9]{12}/,
   ukCarRegistration: /([A-Z]{3}\s?(\d{3}|\d{2}|d{1})\s?[A-Z])|([A-Z]\s?(\d{3}|\d{2}|\d{1})\s?[A-Z]{3})|(([A-HK-PRSVWY][A-HJ-PR-Y])\s?([0][2-9]|[1-9][0-9])\s?[A-HJ-PR-Z]{3})/,
@@ -25,8 +25,8 @@ var hasEmail = function (cell) {
   return patterns.email.test(cell);
 }
 
-var hasDOB = function (cell) {
-  return patterns.dateOfBirth.test(cell);
+var hasDate = function (cell) {
+  return patterns.date.test(cell);
 }
 
 var hasCreditCardVisa = function (cell) {
@@ -106,10 +106,10 @@ function dataChecks(columnErrors, column) {
     })
   );
 
-  if (hasDOB(column.data)) return columnErrors.concat(
+  if (hasDate(column.data)) return columnErrors.concat(
     flag({
-      code: 'date-of-birth-found',
-      message: 'Oops! We\'ve found a date of birth!',
+      code: 'date-found',
+      message: 'Oops! We\'ve found a date! You may want to check it\'s not a date of birth.',
       location: column.location,
       itemType: 'cell'
     })
@@ -203,7 +203,7 @@ function process(path) {
   const data = parse(file);
   const report = analyse(data);
 
-  write('report.json', JSON.stringify(report));
+  write('report.json', JSON.stringify(report, null, 4));
 }
 
 process('./data/unsafe-data-1.csv');
