@@ -209,3 +209,4 @@ function process(path) {
 }
 
 process('./data/unsafe-data-1.csv');
+process('./data/unsafe-data-2.csv');
